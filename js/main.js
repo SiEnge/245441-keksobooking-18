@@ -9,6 +9,8 @@ var OFFER_PHOTOS = [
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
 ];
+var PIN_WIDTH = 40;
+var PIN_HEIGHT = 40;
 
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
@@ -20,27 +22,49 @@ var random = function (min, max) {
   return Math.floor(rand);
 };
 
+// создание массива случайной длины
+var createRandomArray = function (array) {
+  // получение случайной длины массива
+  var lengthArray = random(1, array.length - 1);
+  var resultArray = [];
+
+  // проверка на повтор
+  while (resultArray.length <= lengthArray) {
+    var next = array[random(0, array.length - 1)];
+    var flag = true;
+    for (var i = 0; i < resultArray.length; i++) {
+      if (resultArray[i] === next) {
+        flag = false;
+      }
+    }
+    if (flag) {
+      resultArray.push(next);
+    }
+  }
+
+  return resultArray;
+};
+
 // цикл создания массива объектов с Предложениями
 var createOffers = function () {
   var offersArray = [];
   for (var i = 0; i < 8; i++) {
-    var offer = {
+    var offerItem = {
       'author': {
         'avatar': 'img/avatars/user0' + (i + 1) + '.png'
       },
 
       'offer': {
         'title': 'Предложение №' + (i + 1),
-        'address': '600, 350', // не поняла что именно указать. наверно через this.location.x ?
         'price': 10000,
         'type': OFFER_TYPE[random(0, OFFER_TYPE.length - 1)],
         'rooms': random(1, 5),
         'guests': random(1, 10),
         'checkin': OFFER_CHECKIN[random(0, OFFER_CHECKIN.length - 1)],
         'checkout': OFFER_CHECKOUT[random(0, OFFER_CHECKOUT.length - 1)],
-        'features': OFFER_FEATURES, // понимаю что тут должен быть массив случаной длины, но как лучше это оформить? создать отдельную функцию, для добавления элементов?
+        'features': createRandomArray(OFFER_FEATURES),
         'description': 'Описание предложения',
-        'photos': OFFER_PHOTOS // тот же вопрос, что и про feature
+        'photos': createRandomArray(OFFER_PHOTOS)
       },
 
       'location': {
@@ -49,7 +73,8 @@ var createOffers = function () {
       }
     };
 
-    offersArray.push(offer);
+    offerItem.offer.address = offerItem['location'].x + ', ' + offerItem['location'].y;
+    offersArray.push(offerItem);
   }
   return offersArray;
 };
@@ -57,9 +82,9 @@ var createOffers = function () {
 // cоздание Пина на основе данных Предложения
 var createElementPin = function (offer) {
   var element = pinTemplate.cloneNode(true);
-  element.style = 'left: ' + (offer.location.x - (40 / 2)) + 'px; top: ' + (offer.location.y - 40) + 'px;'; // как тут получить размер элемента pin (width и height) из HTML?
-  element.getElementsByTagName('img')[0].src = offer.author.avatar;
-  element.getElementsByTagName('img')[0].alt = offer.offer.title;
+  element.style = 'left: ' + (offer.location.x - (PIN_WIDTH / 2)) + 'px; top: ' + (offer.location.y - PIN_HEIGHT) + 'px;';
+  element.querySelector('img').src = offer.author.avatar;
+  element.querySelector('img').alt = offer.offer.title;
   return element;
 };
 
