@@ -137,6 +137,7 @@ var activatePage = function () {
     formFieldsets[i].disabled = false;
   }
   form.querySelector('#address').value = (pinMain.offsetLeft + (PIN_MAIN_WIDTH / 2)) + ', ' + (pinMain.offsetTop + PIN_MAIN_HEIGHT);
+  fillMapPins();
 };
 
 // проверка соответствия комнат и количества гостей
