@@ -30,6 +30,9 @@ var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
 var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 var pinMain = document.querySelector('.map__pin--main');
+var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+var popupFeatures = cardTemplate.querySelector('.popup__features');
+var popupPhotos = cardTemplate.querySelector('.popup__photos');
 
 var form = document.querySelector('.ad-form');
 var formFieldsets = form.querySelectorAll('fieldset');
@@ -138,6 +141,7 @@ var activatePage = function () {
   }
   form.querySelector('#address').value = (pinMain.offsetLeft + (PIN_MAIN_WIDTH / 2)) + ', ' + (pinMain.offsetTop + PIN_MAIN_HEIGHT);
   fillMapPins();
+  pasteCard();
 };
 
 // проверка соответствия комнат и количества гостей
@@ -187,3 +191,58 @@ capacitySelect.addEventListener('change', function () {
   validateCapacityRooms();
 });
 
+
+// Задание 6. Личный проект: больше деталей
+
+var appendTypeOffer = function (type) {
+  switch (type) {
+    case 'flat':
+      return 'Квартира';
+    case 'bungalo':
+      return 'Бунгало';
+    case 'house':
+      return 'Дом';
+    case 'palace':
+      return 'Дворец';
+    default:
+      return '';
+  }
+};
+
+var appendFeaturesOffer = function (features, featureBlock) {
+  var popupFeaturesItems = featureBlock.querySelectorAll('.popup__feature');
+  for (var i = 0; i < popupFeaturesItems.length; i++) {
+    popupFeaturesItems[i].style.display = 'none';
+  }
+  for (var j = 0; j < features.length; j++) {
+    featureBlock.querySelector('.popup__feature--' + features[j]).style.display = '';
+  }
+};
+
+var appendPhotosOffer = function (photos, photoBlock) {
+  photoBlock.innerHTML = '';
+  for (var i = 0; i < photos.length; i++) {
+    photoBlock.innerHTML = photoBlock.innerHTML + '<img src="' + photos[i] + '" class="popup__photo" width="45" height="40" alt="Фотография жилья">';
+  }
+};
+
+var createCard = function (offerItem) {
+  cardTemplate.querySelector('.popup__title').innerHTML = offerItem.offer.title;
+  cardTemplate.querySelector('.popup__text--address').innerHTML = offerItem.offer.address;
+  cardTemplate.querySelector('.popup__text--price').innerHTML = offerItem.offer.price + '₽/ночь';
+  cardTemplate.querySelector('.popup__type').innerHTML = appendTypeOffer(offerItem.offer.type);
+  cardTemplate.querySelector('.popup__text--capacity').innerHTML = offerItem.offer.rooms + ' комнаты для ' + offerItem.offer.guests + ' гостей';
+  cardTemplate.querySelector('.popup__text--time').innerHTML = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
+  appendFeaturesOffer(offerItem.offer.features, popupFeatures);
+  cardTemplate.querySelector('.popup__description').innerHTML = offerItem.offer.description;
+  appendPhotosOffer(offerItem.offer.photos, popupPhotos);
+  cardTemplate.querySelector('.popup__avatar').src = offerItem.author.avatar;
+  return cardTemplate;
+};
+
+var pasteCard = function () {
+  var offers = createOffers();
+  var fragment = document.createDocumentFragment();
+  fragment.appendChild(createCard(offers[0]));
+  map.insertBefore(fragment, map.querySelector('.map__filters-container'));
+};
