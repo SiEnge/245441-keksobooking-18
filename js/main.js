@@ -100,3 +100,6 @@ var fillMapPins = function () {
 
 fillMapPins();
 map.classList.remove('map--faded');
+
+
+// задание 5
