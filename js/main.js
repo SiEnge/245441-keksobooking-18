@@ -15,6 +15,7 @@ var PIN_MAIN_WIDTH = 40;
 var PIN_MAIN_HEIGHT = 44;
 
 var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
 
 var ONE_ROOMS_COUNT = '1';
 var TWO_ROOMS_COUNT = '2';
@@ -43,6 +44,14 @@ var capacitySelect = form.querySelector('#capacity');
 var random = function (min, max) {
   var rand = min + Math.random() * (max + 1 - min);
   return Math.floor(rand);
+};
+
+
+// закрытие Попапа по кнопке Закрыть
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopupCard();
+  }
 };
 
 // создание массива случайной длины
@@ -103,22 +112,51 @@ var createOffers = function () {
 };
 
 // cоздание Пина на основе данных Предложения
-var createElementPin = function (offer) {
+var createElementPin = function (offerId, offer) {
   var element = pinTemplate.cloneNode(true);
   element.style = 'left: ' + (offer.location.x - (PIN_WIDTH / 2)) + 'px; top: ' + (offer.location.y - PIN_HEIGHT) + 'px;';
   element.querySelector('img').src = offer.author.avatar;
   element.querySelector('img').alt = offer.offer.title;
+  element.dataset.offerId = offerId;
   return element;
 };
 
+var offers = createOffers();
+
+
 // заполнение блока map__pins
 var fillMapPins = function () {
-  var offers = createOffers();
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < offers.length; i++) {
-    fragment.appendChild(createElementPin(offers[i]));
+    fragment.appendChild(createElementPin(i, offers[i]));
   }
   mapPins.appendChild(fragment);
+
+
+  var pins = mapPins.querySelectorAll('.map__pin');
+  for (var j = 0; j < pins.length; j++) {
+    if (pins[j] === pinMain) {
+      continue;
+    }
+    pins[j].addEventListener('click', openPopupCard);
+
+    pins[j].addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        openPopupCard(evt);
+      }
+    });
+  }
+};
+
+// очистка блока map_pins
+var clearMapPins = function () {
+  var pins = mapPins.querySelectorAll('.map__pin');
+  for (var i = 0; i < pins.length; i++) {
+    if (pins[i] === pinMain) {
+      continue;
+    }
+    mapPins.removeChild(pins[i]);
+  }
 };
 
 
@@ -140,8 +178,8 @@ var activatePage = function () {
     formFieldsets[i].disabled = false;
   }
   form.querySelector('#address').value = (pinMain.offsetLeft + (PIN_MAIN_WIDTH / 2)) + ', ' + (pinMain.offsetTop + PIN_MAIN_HEIGHT);
+  clearMapPins();
   fillMapPins();
-  pasteCard();
 };
 
 // проверка соответствия комнат и количества гостей
@@ -192,23 +230,17 @@ capacitySelect.addEventListener('change', function () {
 });
 
 
-// Задание 6. Личный проект: больше деталей
+// КАРТОЧКА ПРЕДЛОЖЕНИЯ
 
-var appendTypeOffer = function (type) {
-  switch (type) {
-    case 'flat':
-      return 'Квартира';
-    case 'bungalo':
-      return 'Бунгало';
-    case 'house':
-      return 'Дом';
-    case 'palace':
-      return 'Дворец';
-    default:
-      return '';
-  }
+// библиотека типов помещения
+var typeToNameType = {
+  'flat': 'Квартира',
+  'bungalo': 'Бунгало',
+  'house': 'Дом',
+  'palace': 'Дворец'
 };
 
+// добавление преимуществ предложения
 var appendFeaturesOffer = function (features, featureBlock) {
   var popupFeaturesItems = featureBlock.querySelectorAll('.popup__feature');
   for (var i = 0; i < popupFeaturesItems.length; i++) {
@@ -219,6 +251,7 @@ var appendFeaturesOffer = function (features, featureBlock) {
   }
 };
 
+// добавление фотографий предложения
 var appendPhotosOffer = function (photos, photoBlock) {
   photoBlock.innerHTML = '';
   for (var i = 0; i < photos.length; i++) {
@@ -226,23 +259,54 @@ var appendPhotosOffer = function (photos, photoBlock) {
   }
 };
 
-var createCard = function (offerItem) {
+// создание и заполнение карточки (всплывающее окно) с подробный описанием предложения,
+// где offerId - индекс в массиве предложения offers
+var createCard = function (offerId) {
+  var offerItem = offers[offerId];
+
   cardTemplate.querySelector('.popup__title').innerHTML = offerItem.offer.title;
   cardTemplate.querySelector('.popup__text--address').innerHTML = offerItem.offer.address;
   cardTemplate.querySelector('.popup__text--price').innerHTML = offerItem.offer.price + '₽/ночь';
-  cardTemplate.querySelector('.popup__type').innerHTML = appendTypeOffer(offerItem.offer.type);
+  cardTemplate.querySelector('.popup__type').innerHTML = typeToNameType[offerItem.offer.type] || '';
   cardTemplate.querySelector('.popup__text--capacity').innerHTML = offerItem.offer.rooms + ' комнаты для ' + offerItem.offer.guests + ' гостей';
   cardTemplate.querySelector('.popup__text--time').innerHTML = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
   appendFeaturesOffer(offerItem.offer.features, popupFeatures);
   cardTemplate.querySelector('.popup__description').innerHTML = offerItem.offer.description;
   appendPhotosOffer(offerItem.offer.photos, popupPhotos);
   cardTemplate.querySelector('.popup__avatar').src = offerItem.author.avatar;
+
+  var fragment = document.createDocumentFragment();
+
+  fragment.appendChild(cardTemplate);
+  map.insertBefore(fragment, map.querySelector('.map__filters-container'));
   return cardTemplate;
 };
 
-var pasteCard = function () {
-  var offers = createOffers();
-  var fragment = document.createDocumentFragment();
-  fragment.appendChild(createCard(offers[0]));
-  map.insertBefore(fragment, map.querySelector('.map__filters-container'));
+// открытие карточки предложения (всплывающее окно)
+// => создание карточки и навешивание обработчиков для закрытия окна по кнопке Закрыть и по клавише Esc
+var openPopupCard = function (evt) {
+  var pin = evt.currentTarget;
+  var card = createCard(pin.dataset.offerId);
+  var closeButton = card.querySelector('.popup__close');
+  closeButton.addEventListener('click', closePopupCard);
+  document.addEventListener('keydown', onPopupEscPress);
 };
+
+// закрытие карточки предложения (всплывающее окно) => удаление блока .map__card из блока .map и удаление обработчки закрытия по Esc
+var closePopupCard = function () {
+  map.removeChild(map.querySelector('.map__card'));
+  document.removeEventListener('keydown', onPopupEscPress);
+};
+
+// 2. Напишите код для валидации формы добавления нового объявления. Список полей для валидации:
+// Поле «Заголовок объявления».
+// Поле «Цена за ночь»
+// Поле «Тип жилья»
+// Поле «Адрес»
+// Поля «Время заезда», «Время выезда»
+// В разметке задаётся и адрес, на который отправляются данные формы. В шестом разделе мы выполним задание,
+// в котором перепишем механизм отправки данных, но пока достаточно убедиться, что у соответствующих тегов form прописаны правильные атрибуты.
+
+// Если форма заполнена верно, то должна показываться страница сервера, указанная в атрибуте action тега form, с успешно отправленными данными,
+// если же форма пропустила какие-то некорректные значения, то будет показана страница с допущенными ошибками. В идеале у пользователя
+// не должно быть сценария при котором он может отправить некорректную форму.
