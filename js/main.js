@@ -35,10 +35,10 @@ var cardTemplate = document.querySelector('#card').content.querySelector('.map__
 var popupFeatures = cardTemplate.querySelector('.popup__features');
 var popupPhotos = cardTemplate.querySelector('.popup__photos');
 
-var form = document.querySelector('.ad-form');
-var formFieldsets = form.querySelectorAll('fieldset');
-var housingRoomSelect = form.querySelector('#room_number');
-var capacitySelect = form.querySelector('#capacity');
+var adForm = document.querySelector('.ad-form');
+var formFieldsets = adForm.querySelectorAll('fieldset');
+var housingRoomSelect = adForm.querySelector('#room_number');
+var capacitySelect = adForm.querySelector('#capacity');
 
 // случайное целое число в пределах от min до max
 var random = function (min, max) {
@@ -167,49 +167,24 @@ var initializationPage = function () {
   for (var i = 0; i < formFieldsets.length; i++) {
     formFieldsets[i].disabled = true;
   }
-  form.querySelector('#address').value = (pinMain.offsetLeft + (PIN_MAIN_WIDTH / 2)) + ', ' + (pinMain.offsetTop + (PIN_MAIN_HEIGHT / 2));
+  adForm.querySelector('#address').value = (pinMain.offsetLeft + (PIN_MAIN_WIDTH / 2)) + ', ' + (pinMain.offsetTop + (PIN_MAIN_HEIGHT / 2));
 };
 
 // активация страницы
 var activatePage = function () {
   map.classList.remove('map--faded');
-  form.classList.remove('ad-form--disabled');
+  adForm.classList.remove('ad-form--disabled');
   for (var i = 0; i < formFieldsets.length; i++) {
     formFieldsets[i].disabled = false;
   }
-  form.querySelector('#address').value = (pinMain.offsetLeft + (PIN_MAIN_WIDTH / 2)) + ', ' + (pinMain.offsetTop + PIN_MAIN_HEIGHT);
+  adForm.querySelector('#address').value = (pinMain.offsetLeft + (PIN_MAIN_WIDTH / 2)) + ', ' + (pinMain.offsetTop + PIN_MAIN_HEIGHT);
   clearMapPins();
   fillMapPins();
 };
 
-// проверка соответствия комнат и количества гостей
-var checkCapacityRooms = function (rooms, capacity) {
-  if (rooms === ONE_ROOMS_COUNT && capacity === ONE_CAPACITY_COUNT) {
-    return true;
-  } else if (rooms === TWO_ROOMS_COUNT && (capacity === ONE_CAPACITY_COUNT || capacity === TWO_CAPACITY_COUNT)) {
-    return true;
-  } else if (rooms === THREE_ROOMS_COUNT && (capacity === ONE_CAPACITY_COUNT || capacity === TWO_CAPACITY_COUNT || capacity === THREE_CAPACITY_COUNT)) {
-    return true;
-  } else if (rooms === ONE_HUNDRED_ROOMS_COUNT && capacity === NO_CAPACITY_COUNT) {
-    return true;
-  }
-  return false;
-};
-
-// валидация и установка сообщения при ошибке
-var validateCapacityRooms = function () {
-  capacitySelect.setCustomValidity('');
-  if (!checkCapacityRooms(housingRoomSelect.value, capacitySelect.value)) {
-    capacitySelect.setCustomValidity('Выбранное количество гостей не подходит под количество комнат');
-    capacitySelect.reportValidity();
-  }
-};
-
-
 window.addEventListener('load', function () {
   initializationPage();
 });
-
 
 pinMain.addEventListener('mousedown', function () {
   activatePage();
@@ -221,18 +196,9 @@ pinMain.addEventListener('keydown', function (evt) {
   }
 });
 
-housingRoomSelect.addEventListener('change', function () {
-  validateCapacityRooms();
-});
-
-capacitySelect.addEventListener('change', function () {
-  validateCapacityRooms();
-});
-
-
 // КАРТОЧКА ПРЕДЛОЖЕНИЯ
 
-// библиотека типов помещения
+// библиотека типов жилья
 var typeToNameType = {
   'flat': 'Квартира',
   'bungalo': 'Бунгало',
@@ -261,25 +227,28 @@ var appendPhotosOffer = function (photos, photoBlock) {
 
 // создание и заполнение карточки (всплывающее окно) с подробный описанием предложения,
 // где offerId - индекс в массиве предложения offers
+
+// !!! переименовать, добавить слово element как у createElementPin
 var createCard = function (offerId) {
   var offerItem = offers[offerId];
+  var elementCard = cardTemplate.cloneNode(true);
 
-  cardTemplate.querySelector('.popup__title').innerHTML = offerItem.offer.title;
-  cardTemplate.querySelector('.popup__text--address').innerHTML = offerItem.offer.address;
-  cardTemplate.querySelector('.popup__text--price').innerHTML = offerItem.offer.price + '₽/ночь';
-  cardTemplate.querySelector('.popup__type').innerHTML = typeToNameType[offerItem.offer.type] || '';
-  cardTemplate.querySelector('.popup__text--capacity').innerHTML = offerItem.offer.rooms + ' комнаты для ' + offerItem.offer.guests + ' гостей';
-  cardTemplate.querySelector('.popup__text--time').innerHTML = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
+  elementCard.querySelector('.popup__title').innerHTML = offerItem.offer.title;
+  elementCard.querySelector('.popup__text--address').innerHTML = offerItem.offer.address;
+  elementCard.querySelector('.popup__text--price').innerHTML = offerItem.offer.price + '₽/ночь';
+  elementCard.querySelector('.popup__type').innerHTML = typeToNameType[offerItem.offer.type] || '';
+  elementCard.querySelector('.popup__text--capacity').innerHTML = offerItem.offer.rooms + ' комнаты для ' + offerItem.offer.guests + ' гостей';
+  elementCard.querySelector('.popup__text--time').innerHTML = 'Заезд после ' + offerItem.offer.checkin + ', выезд до ' + offerItem.offer.checkout;
   appendFeaturesOffer(offerItem.offer.features, popupFeatures);
-  cardTemplate.querySelector('.popup__description').innerHTML = offerItem.offer.description;
+  elementCard.querySelector('.popup__description').innerHTML = offerItem.offer.description;
   appendPhotosOffer(offerItem.offer.photos, popupPhotos);
-  cardTemplate.querySelector('.popup__avatar').src = offerItem.author.avatar;
+  elementCard.querySelector('.popup__avatar').src = offerItem.author.avatar;
 
   var fragment = document.createDocumentFragment();
 
-  fragment.appendChild(cardTemplate);
+  fragment.appendChild(elementCard);
   map.insertBefore(fragment, map.querySelector('.map__filters-container'));
-  return cardTemplate;
+  return elementCard;
 };
 
 // открытие карточки предложения (всплывающее окно)
@@ -298,15 +267,173 @@ var closePopupCard = function () {
   document.removeEventListener('keydown', onPopupEscPress);
 };
 
-// 2. Напишите код для валидации формы добавления нового объявления. Список полей для валидации:
-// Поле «Заголовок объявления».
-// Поле «Цена за ночь»
-// Поле «Тип жилья»
-// Поле «Адрес»
-// Поля «Время заезда», «Время выезда»
-// В разметке задаётся и адрес, на который отправляются данные формы. В шестом разделе мы выполним задание,
-// в котором перепишем механизм отправки данных, но пока достаточно убедиться, что у соответствующих тегов form прописаны правильные атрибуты.
+var validityElemForm = function (elem) {
+  var validity = elem.validity;
+  var checkValidate = {
+    message: [],
+    flag: true
+  };
 
-// Если форма заполнена верно, то должна показываться страница сервера, указанная в атрибуте action тега form, с успешно отправленными данными,
-// если же форма пропустила какие-то некорректные значения, то будет показана страница с допущенными ошибками. В идеале у пользователя
-// не должно быть сценария при котором он может отправить некорректную форму.
+  if (!validity.valid) {
+    checkValidate.flag = false;
+
+    if (validity.valueMissing) {
+      checkValidate.message.push('Заполните данное поле.');
+    }
+
+    if (validity.tooShort) {
+      checkValidate.message.push('Введите не менее ' + elem.minLength + ' символов.');
+    }
+
+    if (validity.tooLong) {
+      checkValidate.message.push('Введенный текст слишком длинный. Введите не более ' + elem.maxLength + ' символов.');
+    }
+
+    if (validity.rangeUnderflow) {
+      checkValidate.message.push('Значение должно быть больше или равно ' + elem.min + '.');
+    }
+
+    if (validity.rangeOverflow) {
+      checkValidate.message.push('Значение должно быть меньше или равно ' + elem.max + '.');
+    }
+
+    if (validity.stepMismatch) {
+      checkValidate.message.push('Введите значение с шагом  ' + elem.step + '.');
+    }
+  }
+
+
+  // проверка соответствия Вместимости жилья и Количества гостей
+  if (elem === housingRoomSelect || elem === capacitySelect) {
+    if (!checkCapacityRooms(housingRoomSelect.value, capacitySelect.value)) {
+      checkValidate.flag = false;
+      checkValidate.message.push('Выбранное количество гостей не подходит под количество комнат');
+    }
+  }
+
+  if (!checkValidate.flag) { // если поле не прошло проверку, то вывести сообщение
+    displayErrorMessageForm(elem, checkValidate.message);
+  } else {
+    displayErrorMessageForm(elem, '');
+  }
+
+  return checkValidate;
+};
+
+var displayErrorMessageForm = function (elem, message) {
+  var wrap = elem.parentElement;
+
+  if (wrap.querySelector('.error__elemForm')) {
+    var error = wrap.querySelector('.error__elemForm');
+    error.innerHTML = message;
+  } else {
+    if (message !== '') {
+      elem.insertAdjacentHTML('afterend', '<p class="error__elemForm" style="color: red; margin-top: 6px;">' + message.join('<br>') + '</p>');
+    }
+  }
+};
+
+// проверка соответствия комнат и количества гостей
+var checkCapacityRooms = function (rooms, capacity) {
+  if (rooms === ONE_ROOMS_COUNT && capacity === ONE_CAPACITY_COUNT) {
+    return true;
+  } else if (rooms === TWO_ROOMS_COUNT && (capacity === ONE_CAPACITY_COUNT || capacity === TWO_CAPACITY_COUNT)) {
+    return true;
+  } else if (rooms === THREE_ROOMS_COUNT && (capacity === ONE_CAPACITY_COUNT || capacity === TWO_CAPACITY_COUNT || capacity === THREE_CAPACITY_COUNT)) {
+    return true;
+  } else if (rooms === ONE_HUNDRED_ROOMS_COUNT && capacity === NO_CAPACITY_COUNT) {
+    return true;
+  }
+  return false;
+};
+
+
+housingRoomSelect.addEventListener('change', function () {
+  validityElemForm(capacitySelect);
+});
+
+capacitySelect.addEventListener('change', function () {
+  validityElemForm(capacitySelect);
+});
+
+var priceInput = adForm.querySelector('#price');
+
+// библиотека
+var typeToMinPrice = {
+  'flat': 1000,
+  'bungalo': 0,
+  'house': 5000,
+  'palace': 10000
+};
+
+
+var setMinPriceInput = function (type) {
+  priceInput.min = typeToMinPrice[type];
+  priceInput.placeholder = typeToMinPrice[type];
+};
+
+
+var typeSelect = adForm.querySelector('#type');
+
+typeSelect.addEventListener('change', function () {
+  setMinPriceInput(typeSelect.value);
+  validityElemForm(priceInput);
+});
+
+var timeInSelect = adForm.querySelector('#timein');
+var timeOutSelect = adForm.querySelector('#timeout');
+
+timeInSelect.addEventListener('change', function () {
+  timeOutSelect.value = timeInSelect.value;
+});
+
+timeOutSelect.addEventListener('change', function () {
+  timeInSelect.value = timeOutSelect.value;
+});
+
+// ВАЛИДАЦИЯ ФОРМЫ
+
+var validityInput = function (evt) {
+  var input = evt.target;
+  validityElemForm(input);
+};
+
+var inputs = adForm.querySelectorAll('input');
+var selects = adForm.querySelectorAll('select');
+
+for (var i = 0; i < inputs.length; i++) {
+  var input = inputs[i];
+  input.addEventListener('change', validityInput);
+}
+
+var validityForm = function () {
+  var flagValidForm = true;
+  var checkForm;
+
+  for (i = 0; i < inputs.length; i++) {
+    input = inputs[i];
+    checkForm = validityElemForm(input);
+    if (!checkForm.flag) {
+      flagValidForm = false;
+    }
+  }
+
+  for (var j = 0; j < selects.length; j++) {
+    var select = selects[j];
+    checkForm = validityElemForm(select);
+    if (!checkForm.flag) {
+      flagValidForm = false;
+    }
+  }
+
+  return flagValidForm;
+};
+
+adForm.addEventListener('submit', function (evt) {
+  evt.preventDefault();
+  if (validityForm(adForm)) {
+    adForm.submit();
+  }
+});
+
+// инициализация формы с правильными данными
