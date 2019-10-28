@@ -1,40 +1,43 @@
 'use strict';
+(function () {
 
-var map = document.querySelector('.map');
-var mapPins = document.querySelector('.map__pins');
-var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var map = document.querySelector('.map');
+  var mapPins = document.querySelector('.map__pins');
+  var pinMain = document.querySelector('.map__pin--main');
 
-// заполнение блока map__pins
-var fillMapPins = function () {
-  var fragment = document.createDocumentFragment();
-  for (var i = 0; i < offers.length; i++) {
-    fragment.appendChild(createElementPin(i, offers[i]));
-  }
-  mapPins.appendChild(fragment);
-
-
-  var pins = mapPins.querySelectorAll('.map__pin');
-  for (var j = 0; j < pins.length; j++) {
-    if (pins[j] === pinMain) {
-      continue;
+  // заполнение блока map__pins
+  window.fillMapPins = function () {
+    var fragment = document.createDocumentFragment();
+    var offers = window.offers;
+    for (var i = 0; i < offers.length; i++) {
+      var offer = offers[i]
+      fragment.appendChild(createElementPin(i, offer));
     }
-    pins[j].addEventListener('click', openPopupCard);
+    mapPins.appendChild(fragment);
 
-    pins[j].addEventListener('keydown', function (evt) {
-      if (evt.keyCode === ENTER_KEYCODE) {
-        openPopupCard(evt);
+    var pins = mapPins.querySelectorAll('.map__pin');
+    for (var j = 0; j < pins.length; j++) {
+      if (pins[j] === pinMain) {
+        continue;
       }
-    });
-  }
-};
+      pins[j].addEventListener('click', openPopupCard);
 
-// очистка блока map_pins
-var clearMapPins = function () {
-  var pins = mapPins.querySelectorAll('.map__pin');
-  for (var i = 0; i < pins.length; i++) {
-    if (pins[i] === pinMain) {
-      continue;
+      pins[j].addEventListener('keydown', function (evt) {
+        if (evt.keyCode === ENTER_KEYCODE) {
+          openPopupCard(evt);
+        }
+      });
     }
-    mapPins.removeChild(pins[i]);
-  }
-};
+  };
+
+  // очистка блока map_pins
+  window.clearMapPins = function () {
+    var pins = mapPins.querySelectorAll('.map__pin');
+    for (var i = 0; i < pins.length; i++) {
+      if (pins[i] === pinMain) {
+        continue;
+      }
+      mapPins.removeChild(pins[i]);
+    }
+  };
+})();
