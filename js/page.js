@@ -1,28 +1,21 @@
 'use strict';
+(function () {
+  var map = document.querySelector('.map');
+  var mapPins = document.querySelector('.map__pins');
+  var pinMain = document.querySelector('.map__pin--main');
 
-var mapPins = document.querySelector('.map__pins');
+  // активация страницы
+  window.activatePage = function () {
+    map.classList.remove('map--faded');
+    activationForm();
+    
+    clearMapPins();
+    fillMapPins();
+  };
 
-// инициализация страницы при загрузке страницы
-var initializationPage = function () {
-  for (var i = 0; i < formFieldsets.length; i++) {
-    formFieldsets[i].disabled = true;
-  }
-  adForm.querySelector('#address').value = (pinMain.offsetLeft + (PIN_MAIN_WIDTH / 2)) + ', ' + (pinMain.offsetTop + (PIN_MAIN_HEIGHT / 2));
-};
+  window.addEventListener('load', function () {
+    deactivationForm();
+  });
+})();
 
-// активация страницы
-var activatePage = function () {
-  map.classList.remove('map--faded');
-  adForm.classList.remove('ad-form--disabled');
-  for (var i = 0; i < formFieldsets.length; i++) {
-    formFieldsets[i].disabled = false;
-  }
-  adForm.querySelector('#address').value = (pinMain.offsetLeft + (PIN_MAIN_WIDTH / 2)) + ', ' + (pinMain.offsetTop + PIN_MAIN_HEIGHT);
-  clearMapPins();
-  fillMapPins();
-};
-
-window.addEventListener('load', function () {
-  initializationPage();
-});
 
