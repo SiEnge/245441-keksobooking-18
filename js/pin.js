@@ -6,9 +6,9 @@
   var PIN_WIDTH = 40;
   var PIN_HEIGHT = 40;
   var pinMain = document.querySelector('.map__pin--main');
-  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
   window.createElementPin = function (offerId, offer) {
+    var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
     var element = pinTemplate.cloneNode(true);
     element.dataset.offerId = offerId;
     element.style = 'left: ' + (offer.location.x - (PIN_WIDTH / 2)) + 'px; top: ' + (offer.location.y - PIN_HEIGHT) + 'px;';
