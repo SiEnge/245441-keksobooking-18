@@ -36,7 +36,6 @@
     adForm.querySelector('#address').value = (pinMain.offsetLeft + (window.pin.PIN_MAIN_WIDTH / 2)) + ', ' + (pinMain.offsetTop + window.pin.PIN_MAIN_HEIGHT);
   };
 
-
   var validityElemForm = function (elem) {
     var validity = elem.validity;
     var checkValidate = {
@@ -199,12 +198,76 @@
     return flagValidForm;
   };
 
+  var createErrorMessage = function (errorMessage) {
+    var template = document.querySelector('#error').content.querySelector('.error');
+    var element = template.cloneNode(true);
+    if (errorMessage !== '') element.querySelector('.error__message').innerHTML = errorMessage;
+    return element;
+  };
+
+
+  var openErrorMessage = function () {
+    var main = document.querySelector('main');
+    var message = createErrorMessage();
+    main.appendChild(message);
+
+    window.closeErrorMessage = function () {
+      main.removeChild(message);
+      document.removeEventListener('keydown', onMessageEscPress);
+    };
+
+    var errorButton = message.querySelector('.error__button'); // кнопка попробовать снова
+    // errorButton.addEventListener('click', closeErrorMessage);
+    message.addEventListener('click', closeErrorMessage);
+    document.addEventListener('keydown', onErrorMessageEscPress);
+    
+  };
+
+  var createSuccessMessage = function () {
+    var template = document.querySelector('#success').content.querySelector('.success');
+    var element = template.cloneNode(true);
+    return element;
+  };
+
+  var openSuccessMessage = function () {
+    var main = document.querySelector('main');
+    var message = createSuccessMessage();
+    main.appendChild(message);
+    window.closeSuccessMessage = function () {
+      main.removeChild(message);
+      document.removeEventListener('keydown', onMessageEscPress);
+    };
+    message.addEventListener('click', closeSuccessMessage);
+    document.addEventListener('keydown', onSuccessMessageEscPress);
+  };
+
+  var onSuccess = function (response) {
+    console.log("форма отправлена");
+    deactivationForm();
+    adForm.reset();
+    clearMapPins();
+    closePopupCard();
+    openSuccessMessage();
+
+    // исходное положение метки + координаты в поле Адрес
+  };
+
+  var onError = function (error) {
+    openErrorMessage(error);
+    console.log("ошибка");
+  };
+
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
+
     if (validityForm(adForm)) {
-      adForm.submit();
+      window.upload(new FormData(adForm), onSuccess, onError);
     }
   });
 })();
 
-// инициализация формы с правильными данными
+
+// Если при отправке данных произошла ошибка запроса, покажите соответствующее сообщение. 
+// Разметку сообщения, которая находится в блоке #error в шаблоне template, нужно разместить в main. 
+// Сообщение должно исчезать после нажатия на кнопку .error__button, по нажатию на клавишу Esc и 
+// по клику на произвольную область экрана.
