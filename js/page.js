@@ -9,8 +9,7 @@
     map.classList.remove('map--faded');
     activationForm();
     
-    clearMapPins();
-    fillMapPins();
+    
   };
 
   window.addEventListener('load', function () {
