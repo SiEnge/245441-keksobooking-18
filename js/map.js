@@ -1,13 +1,15 @@
 'use strict';
 (function () {
   // заполнение блока map__pins
-  window.fillMapPins = function () {
+  window.fillMapPins = function (similarOffers) {
+    clearMapPins();
     var mapPins = document.querySelector('.map__pins');
     var pinMain = document.querySelector('.map__pin--main');
     var fragment = document.createDocumentFragment();
-    var offers = window.offers;
-    for (var i = 0; i < offers.length; i++) {
-      var offer = offers[i];
+    // var offers = window.offers;
+    // for (var i = 0; i < similarOffers.length; i++) {
+    for (var i = 0; i < 5; i++) {
+      var offer = similarOffers[i];
       var pin = createElementPin(i, offer);
       fragment.appendChild(pin);
     }
