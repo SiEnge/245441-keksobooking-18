@@ -29,40 +29,44 @@
 
   // создание и заполнение карточки (всплывающее окно) с подробный описанием предложения
   var createElementCard = function (offerId) {
-    var offer = offers[offerId];
+    var offer = (similarOffers.length > 0) ? similarOffers[offerId] : offers[offerId];
+
     var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
     var element = cardTemplate.cloneNode(true);
 
-    element.querySelector('.popup__title').innerHTML = offer.offer.title;
-    element.querySelector('.popup__text--address').innerHTML = offer.offer.address;
+    element.querySelector('.popup__title').innerHTML = offer.offer.title || '';
+    element.querySelector('.popup__text--address').innerHTML = offer.offer.address || '';
     element.querySelector('.popup__text--price').innerHTML = offer.offer.price + '₽/ночь';
     element.querySelector('.popup__type').innerHTML = window.util.typeToNameType[offer.offer.type] || '';
     element.querySelector('.popup__text--capacity').innerHTML = offer.offer.rooms + ' комнаты для ' + offer.offer.guests + ' гостей';
     element.querySelector('.popup__text--time').innerHTML = 'Заезд после ' + offer.offer.checkin + ', выезд до ' + offer.offer.checkout;
     appendFeaturesOffer(offer.offer.features, element);
-    element.querySelector('.popup__description').innerHTML = offer.offer.description;
+    element.querySelector('.popup__description').innerHTML = offer.offer.description || '';
     appendPhotosOffer(offer.offer.photos, element);
-    element.querySelector('.popup__avatar').src = offer.author.avatar;
+    element.querySelector('.popup__avatar').src = offer.author.avatar || '';
 
     return element;
   };
 
   // закрытие карточки предложения (всплывающее окно)
   window.closePopupCard = function () {
-    var map = document.querySelector('.map');
-    if (map.querySelector('.map__card')) {
-      map.removeChild(map.querySelector('.map__card'));
+    var card = mapElement.querySelector('.map__card');
+    if (card) {
+      mapElement.removeChild(card);
     }
     document.removeEventListener('keydown', onPopupEscPress);
+    deactivatePins();
   };
 
   // открытие карточки предложения (всплывающее окно)
   window.openPopupCard = function (evt) {
-    var map = document.querySelector('.map');
     closePopupCard();
     var pin = evt.currentTarget;
+    pin.classList.add('map__pin--active');
+
     var card = createElementCard(pin.dataset.offerId);
-    map.insertBefore(card, map.querySelector('.map__filters-container'));
+    mapElement.insertBefore(card, mapElement.querySelector('.map__filters-container'));
+    
     var closeButton = card.querySelector('.popup__close');
     closeButton.addEventListener('click', closePopupCard);
     document.addEventListener('keydown', onPopupEscPress);

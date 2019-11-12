@@ -1,50 +1,74 @@
 'use strict';
 (function () {
-  var pinMain = document.querySelector('.map__pin--main');
-  var addressAdForm = document.querySelector('#address');
+  // var pinMain = document.querySelector('.map__pin--main');
+  // var addressAdForm = document.querySelector('#address');
+
 
   pinMain.addEventListener('mousedown', function (evt) {
-  	evt.preventDefault();
+    evt.preventDefault();
 
-  	// координаты точки с которой начали перемещать
-  	var startCoords = {
-		  x: evt.clientX,
-		  y: evt.clientY
-		};
+    // координаты точки с которой начали перемещать
+    var startCoords = new Coordinate(evt.clientX, evt.clientY);
 
-		// при перемещении мыши обновлять смещение относительно первоначальной точки
-		var onMouseMove = function (moveEvt) {
-	    moveEvt.preventDefault();
+    // при перемещении мыши обновлять смещение относительно первоначальной точки
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
 
-	    var shift = {
-	      x: startCoords.x - moveEvt.clientX,
-	      y: startCoords.y - moveEvt.clientY
-	    };
+      //определение смещения метки
+      var shift = new Coordinate(startCoords.x - moveEvt.clientX, startCoords.y - moveEvt.clientY);
 
-	    startCoords = {
-	      x: moveEvt.clientX,
-	      y: moveEvt.clientY
-	    };
+      // фиксирование новых координат
+      // var startCoords = new Coordinate(moveEvt.clientX, moveEvt.clientY, 130, 630);
 
-	    // обновление координат Пина
-	    pinMain.style.top = (pinMain.offsetTop - shift.y) + 'px';
-	    pinMain.style.left = (pinMain.offsetLeft - shift.x) + 'px';
+      // startCoords.setX = moveEvt.clientX;
+      // startCoords.setY = moveEvt.clientY;
+      startCoords = new Coordinate(moveEvt.clientX, moveEvt.clientY);
 
-	    // обновление поля с Адресом
-	    addressAdForm.value = (pinMain.offsetTop - shift.y) + ', ' + (pinMain.offsetLeft - shift.x);
-	  };
+      // var pinMainCoords = new Coordinate(pinMain.offsetLeft - shift.x, pinMain.offsetTop - shift.y);
+      // window.Coordinate = function (x, y, minX, maxX, minY, maxY) {
+      var pinMainCoords = new Coordinate('', '', window.COORD_PIN_MAIN.MIN_X, window.COORD_PIN_MAIN.MAX_X, window.COORD_PIN_MAIN.MIN_Y, window.COORD_PIN_MAIN.MAX_Y);
+      pinMainCoords.setX(pinMain.offsetLeft - shift.x);
+      pinMainCoords.setY(pinMain.offsetTop - shift.y);
 
-	  // при отпускании кнопки мыши отключение обработчиков
-	  var onMouseUp = function (upEvt) {
-		  upEvt.preventDefault();
+      // Ограничим область установки пина - перенести в отдельную функцию проверку
+        // if (pinMainCoords.x > MAP_MAX_X) {
+        //   pinMainCoords.x = MAP_MAX_X;
+        // }
+        // if (pinMainCoords.y > window.COORD_PIN_MAIN.MAX_Y) {
+        //   pinMainCoords.y = window.COORD_PIN_MAIN.MAX_Y;
+        // }
+        // if (pinMainCoords.x < MAP_MIN_X) {
+        //   pinMainCoords.x = MAP_MIN_X;
+        // }
+        // if (pinMainCoords.y < window.COORD_PIN_MAIN.MIN_Y;) {
+        //   pinMainCoords.y = window.COORD_PIN_MAIN.MIN_Y;;
+        // }
 
-		  document.removeEventListener('mousemove', onMouseMove);
-		  document.removeEventListener('mouseup', onMouseUp);
-		};
+      // обновление координат Пина
+      // 4.3. Для удобства пользователей значение Y-координаты адреса должно быть 
+      // ограничено интервалом от 130 до 630. Значение X-координаты адреса должно 
+      // быть ограничено размерами блока, в котором перемещается метка.
 
-		// обработчики передвижения и отпускания
-		document.addEventListener('mousemove', onMouseMove);
-  	document.addEventListener('mouseup', onMouseUp);
+      pinMain.style.top = pinMainCoords.y + 'px';
+      pinMain.style.left = pinMainCoords.x + 'px';
+
+      // обновление поля с Адресом
+      var coord = positionPinMain();
+      displayCoordinatePinMain(coord.x, coord.y);
+
+    };
+
+    // при отпускании кнопки мыши отключение обработчиков
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    // обработчики передвижения и отпускания
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
 
 })();
@@ -58,7 +82,7 @@
 // 2. Обработчики mousemove и mouseup должны запускать логику изменения положения метки: 
 // в нём должны вычисляться новые координаты метки на основании смещения, применяться через 
 // стили к элементу и записываться в поле адреса (с поправкой на то, что в адрес записываются 
-// 	координаты острого конца).
+//  координаты острого конца).
 
 // 3. Учтите, расчёт координат метки и их запись в поле адреса должна дублироваться и 
 // в обработчике mouseup, потому что в некоторых случаях пользователь может нажать мышь на метке, 

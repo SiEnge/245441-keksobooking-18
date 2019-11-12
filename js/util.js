@@ -68,4 +68,83 @@
     return resultArray;
   };
 
+
+  window.Coordinate = function (x, y, minX, maxX, minY, maxY) {
+    this.x = x;
+    this.y = y;
+
+    this._minX = minX;
+    this._maxX = maxX;
+    this._minY = minY;
+    this._maxY = maxY;
+  };
+
+  Coordinate.prototype.setX = function(x) {
+    this.x = x;
+  };
+
+  Coordinate.prototype.setY = function(y) {
+    if (y >= this._minY && 
+        y <= this._maxY) {
+      this.y = y;
+    }
+  };
+
+  Coordinate.prototype.setX = function(x) {
+    if (x >= this._minX && 
+        x <= this._maxX) {
+      this.x = x;
+    }
+  };
+
+  window.disabledForm = function (form) {
+    var fieldsets = form.querySelectorAll('fieldset');
+    if (fieldsets.length > 0) {
+      for (var i = 0; i < fieldsets.length; i++) {
+        fieldsets[i].disabled = true;
+      }
+    }
+    
+    var selects = form.querySelectorAll('select');
+    if (selects.length > 0) {
+      for (var i = 0; i < selects.length; i++) {
+        selects[i].disabled = true;
+      }
+    }
+  };
+
+  window.activatedForm = function (form) {
+    var fieldsets = form.querySelectorAll('fieldset');
+    for (var i = 0; i < fieldsets.length; i++) {
+      fieldsets[i].disabled = false;
+    }
+
+    var selects = form.querySelectorAll('select');
+    if (selects.length > 0) {
+      for (var i = 0; i < selects.length; i++) {
+        selects[i].disabled = false;
+      }
+    }
+  };
+
+
+})();
+
+'use strict';
+(function () {
+  var DEBOUNCE_INTERVAL = 500; // ms
+  
+  window.debounce = function (cb) {
+    var lastTimeout = null;
+
+    return function() {
+      var parameters = arguments;
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(function() {
+        cb.apply(null, parameters);
+      }, DEBOUNCE_INTERVAL);
+    };
+  };
 })();

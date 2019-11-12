@@ -1,6 +1,11 @@
 'use strict';
 
 (function () {
+  window.url = {
+    GET_OFFERS: 'https://js.dump.academy/keksobooking/data',
+    POST_OFFER: 'https://js.dump.academy/keksobooking'
+  }
+
 
   window.load = function (url, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
@@ -28,13 +33,9 @@
     xhr.open('GET', url);
     xhr.send();
   };
-})();
 
-
-(function () {
-  var URL = 'https://js.dump.academy/keksobooking';
   
-  window.upload = function (data, onSuccess, onError) {
+  window.upload = function (data, url, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     
@@ -47,14 +48,9 @@
       // onSuccess(xhr.response);
     });
     
-    xhr.open('POST', URL);
+    xhr.open('POST', url);
     xhr.send(data);
   };
-})();
-
-(function () {
-  // 4. Если при загрузке данных произошла ошибка запроса, покажите соответствующее сообщение в блоке main, 
-// используя блок #error из шаблона template
 
   var createElementError = function (text) {
     var errorTemplate = document.querySelector('#error').content.querySelector('.error');
@@ -69,24 +65,8 @@
     var main = document.querySelector('main');
     main.appendChild(createElementError(text));
   };
-
-
-  var onError = function (message) {
-    showError();
-    console.error(message);
-  };
-  
-  var onSuccess = function (data) {
-    window.offers = data;
-    var similarOffers = checkFilter(data);
-    fillMapPins(similarOffers);
-    
-
-  };
-  
-  window.load('https://js.dump.academy/keksobooking/data', onSuccess, onError);
-  
 })();
+
 
 
 
