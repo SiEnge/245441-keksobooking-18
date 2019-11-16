@@ -7,22 +7,16 @@
 
   window.page = {
     activate: function () {
-      activateAdForm(); 
-      map.activate(); 
-      activateFilterForm();  
-
-      initPinMain(); 
-      pinMain.removeEventListener('mousedown', page.activate);
-      pinMain.removeEventListener('keydown', onPinMainEnterPress);
+      form.activate();
+      map.activate();
+      filter.activate();
+      pinMain.activate();
     },
     inactivate: function () {
       map.inactivate();
-      disableAdForm();
-      disableFilterForm();
-
-      initPinMain();
-      pinMain.addEventListener('mousedown', page.activate);
-      pinMain.addEventListener('keydown', onPinMainEnterPress);
+      form.disable();
+      filter.disable();
+      pinMain.init();
     }
   };
 })();
