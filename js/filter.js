@@ -6,7 +6,8 @@
   var PRICE_MIN = 0;
   var PRICE_MAX = Infinity;
 
-  window.filterElement = document.querySelector('.map__filters');
+  var filterElement = document.querySelector('.map__filters');
+  window.filterElement = filterElement;
 
   var checkTypeFilter = function () {
     var filterSelect = filterElement.querySelector('#housing-type');
@@ -91,20 +92,18 @@
 
   window.filter = {
     activate: function () {
-      data.loadOffers();
+      window.data.loadOffers();
 
       var filterElements = window.filterElement.querySelectorAll('.map__filter');
       for (var i = 0; i < filterElements.length; i++) {
-        var filterElement = filterElements[i];
-        filterElement.addEventListener('change', pin.display);
+        filterElements[i].addEventListener('change', window.pin.display);
       }
 
       var filterFeatureElement = window.filterElement.querySelector('.map__features');
       var filterFeatureElements = filterFeatureElement.querySelectorAll('.map__checkbox');
 
-      for (var i = 0; i < filterFeatureElements.length; i++) {
-        var filterFeatureElement = filterFeatureElements[i];
-        filterFeatureElement.addEventListener('change', pin.display);
+      for (var j = 0; j < filterFeatureElements.length; j++) {
+        filterFeatureElements[j].addEventListener('change', window.pin.display);
       }
     },
     disable: function () {
@@ -113,7 +112,7 @@
     },
     getOffers: function () {
       var filter = getFilter();
-      return offers.filter(function (offer) {
+      return window.offers.filter(function (offer) {
         return isTypeFilter(offer.offer.type, filter.type) &&
         isPriceFilter(offer.offer.price, filter.price) &&
         isRoomsFilter(offer.offer.rooms, filter.rooms) &&
