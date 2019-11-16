@@ -62,7 +62,7 @@
   };
 
   var createElementCard = function (offerId) {
-    var offer = (similarOffers.length > 0) ? similarOffers[offerId] : offers[offerId];
+    var offer = (window.similarOffers.length > 0) ? window.similarOffers[offerId] : window.offers[offerId];
     var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
     var element = cardTemplate.cloneNode(true);
     element.querySelector('.popup__title').textContent = offer.offer.title || '';
@@ -79,30 +79,30 @@
   };
 
   var onCardEscPress = function (evt) {
-    if (evt.keyCode === util.ESC_KEYCODE) {
-      card.close();
+    if (evt.keyCode === window.util.ESC_KEYCODE) {
+      window.card.close();
     }
   };
 
   window.card = {
     open: function (evt) {
-      card.close();
+      window.card.close();
       var pinElement = evt.currentTarget;
-      pin.activate(pinElement);
+      window.pin.activate(pinElement);
 
       var cardElement = createElementCard(pinElement.dataset.offerId);
       var closeButtonElement = cardElement.querySelector('.popup__close');
-      closeButtonElement.addEventListener('click', card.close);
+      closeButtonElement.addEventListener('click', window.card.close);
       document.addEventListener('keydown', onCardEscPress);
-      mapElement.insertBefore(cardElement, mapElement.querySelector('.map__filters-container'));
+      window.mapElement.insertBefore(cardElement, window.mapElement.querySelector('.map__filters-container'));
     },
     close: function () {
-      var cardElement = mapElement.querySelector('.map__card');
+      var cardElement = window.mapElement.querySelector('.map__card');
       if (cardElement) {
-        mapElement.removeChild(cardElement);
+        window.mapElement.removeChild(cardElement);
       }
       document.removeEventListener('keydown', onCardEscPress);
-      pin.deactivate();
+      window.pin.deactivate();
     }
   };
 })();

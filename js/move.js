@@ -12,7 +12,7 @@
       var shift = new window.Coordinate(startCoords.x - moveEvt.clientX, startCoords.y - moveEvt.clientY);
       startCoords = new window.Coordinate(moveEvt.clientX, moveEvt.clientY);
 
-      pinMain.setCoord(shift);
+      window.pinMain.setCoord(shift);
     };
 
     var onMouseUp = function (upEvt) {

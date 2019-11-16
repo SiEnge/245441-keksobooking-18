@@ -2,21 +2,21 @@
 
 (function () {
   window.addEventListener('load', function () {
-    page.inactivate();
+    window.page.inactivate();
   });
 
   window.page = {
     activate: function () {
-      form.activate();
-      map.activate();
-      filter.activate();
-      pinMain.activate();
+      window.form.activate();
+      window.map.activate();
+      window.filter.activate();
+      window.pinMain.activate();
     },
     inactivate: function () {
-      map.inactivate();
-      form.disable();
-      filter.disable();
-      pinMain.init();
+      window.map.inactivate();
+      window.form.disable();
+      window.filter.disable();
+      window.pinMain.init();
     }
   };
 })();
