@@ -89,8 +89,8 @@
       }
 
       // проверка соответствия Вместимости жилья и Количества гостей
-      if (elem === formElement.querySelector('#room_number') || elem === formElement.querySelector('#capacity')) {
-        if (!checkCapacityRooms(formElement.querySelector('#room_number').value, formElement.querySelector('#capacity').value)) {
+      if (elem === window.formElement.querySelector('#room_number') || elem === window.formElement.querySelector('#capacity')) {
+        if (!checkCapacityRooms(window.formElement.querySelector('#room_number').value, window.formElement.querySelector('#capacity').value)) {
           checkValidate.flag = false;
           checkValidate.message.push('Выбранное количество гостей не подходит под количество комнат');
         }
@@ -106,7 +106,7 @@
     },
     input: function (evt) {
       var input = evt.target;
-      validity.elemForm(input);
+      window.validity.elemForm(input);
     },
     checkForm: function (form) {
       var flagValidForm = true;
@@ -116,7 +116,7 @@
 
       for (var i = 0; i < inputs.length; i++) {
         var input = inputs[i];
-        checkForm = validity.elemForm(input);
+        checkForm = window.validity.elemForm(input);
         if (!checkForm.flag) {
           flagValidForm = false;
         }
@@ -124,7 +124,7 @@
 
       for (var j = 0; j < selects.length; j++) {
         var select = selects[j];
-        checkForm = validity.elemForm(select);
+        checkForm = window.validity.elemForm(select);
         if (!checkForm.flag) {
           flagValidForm = false;
         }

@@ -11,14 +11,16 @@
     MAX_X: MAP_WIDTH - (PIN_MAIN_WIDTH / 2),
     MIN_Y: 130,
     MAX_Y: 630
-  }
+  };
 
-  window.pinMainElement = document.querySelector('.map__pin--main');
+  var pinMainElement = document.querySelector('.map__pin--main');
+  window.pinMainElement = pinMainElement;
+
   var coordDefaultPinMain = new window.Coordinate(pinMainElement.offsetLeft, pinMainElement.offsetTop);
 
   var onPinMainEnterPress = function (evt) {
     if (evt.keyCode === window.util.ENTER_KEYCODE) {
-      page.activate();
+      window.page.activate();
     }
   };
 
@@ -30,38 +32,38 @@
   var getCoordCenterPinMain = function (coordPinMain) {
     var coordCenter = {};
     coordCenter.x = Math.round(coordPinMain.x + (PIN_MAIN_WIDTH / 2));
-    if (mapElement.classList.contains('map--faded')) {
-      coordCenter.y =  Math.round(coordPinMain.y + (PIN_MAIN_HEIGHT / 2));
+    if (window.mapElement.classList.contains('map--faded')) {
+      coordCenter.y = Math.round(coordPinMain.y + (PIN_MAIN_HEIGHT / 2));
     } else {
-      coordCenter.y =  Math.round(coordPinMain.y + PIN_MAIN_HEIGHT);
+      coordCenter.y = Math.round(coordPinMain.y + PIN_MAIN_HEIGHT);
     }
 
     return coordCenter;
   };
 
-  var displayCoordPinMain = function(coord) {
+  var displayCoordPinMain = function (coord) {
     var coordCenter = getCoordCenterPinMain(coord);
-    form.displayCoordAddress(coordCenter);
+    window.form.displayCoordAddress(coordCenter);
   };
 
   window.pinMain = {
     init: function () {
-      setStyleCoorsPinMain(coordDefaultPinMain)
+      setStyleCoorsPinMain(coordDefaultPinMain);
       displayCoordPinMain(coordDefaultPinMain);
 
-      pinMainElement.addEventListener('mousedown', page.activate);
+      pinMainElement.addEventListener('mousedown', window.page.activate);
       pinMainElement.addEventListener('keydown', onPinMainEnterPress);
-      pinMainElement.removeEventListener('mousedown', move);
+      pinMainElement.removeEventListener('mousedown', window.move);
     },
     activate: function () {
       displayCoordPinMain(coordDefaultPinMain);
 
-      pinMainElement.removeEventListener('mousedown', page.activate);
+      pinMainElement.removeEventListener('mousedown', window.page.activate);
       pinMainElement.removeEventListener('keydown', onPinMainEnterPress);
-      pinMainElement.addEventListener('mousedown', move);
+      pinMainElement.addEventListener('mousedown', window.move);
     },
     setCoord: function (shift) {
-      var newCoord = new window.Coordinate(pinMainElement.offsetLeft - shift.x, pinMainElement.offsetTop - shift.y)
+      var newCoord = new window.Coordinate(pinMainElement.offsetLeft - shift.x, pinMainElement.offsetTop - shift.y);
 
       var pinMainCoords = new window.Coordinate('', '', COORD_PIN_MAIN.MIN_X, COORD_PIN_MAIN.MAX_X, COORD_PIN_MAIN.MIN_Y, COORD_PIN_MAIN.MAX_Y);
       pinMainCoords.setX(newCoord.x);

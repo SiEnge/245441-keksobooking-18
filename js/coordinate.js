@@ -11,17 +11,15 @@
     this._maxY = maxY;
   };
 
-  Coordinate.prototype.setY = function(y) {
+  window.Coordinate.prototype.setY = function (y) {
     if (y >= this._minY && y <= this._maxY) {
       this.y = y;
     }
   };
 
-  Coordinate.prototype.setX = function(x) {
+  window.Coordinate.prototype.setX = function (x) {
     if (x >= this._minX && x <= this._maxX) {
       this.x = x;
     }
   };
-
 })();
-    

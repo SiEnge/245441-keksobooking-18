@@ -18,8 +18,8 @@
 
       var selects = form.querySelectorAll('select');
       if (selects.length > 0) {
-        for (var i = 0; i < selects.length; i++) {
-          selects[i].disabled = true;
+        for (var j = 0; j < selects.length; j++) {
+          selects[j].disabled = true;
         }
       }
     },
@@ -33,8 +33,8 @@
 
       var selects = form.querySelectorAll('select');
       if (selects.length > 0) {
-        for (var i = 0; i < selects.length; i++) {
-          selects[i].disabled = false;
+        for (var j = 0; j < selects.length; j++) {
+          selects[j].disabled = false;
         }
       }
     }

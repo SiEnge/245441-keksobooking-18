@@ -1,7 +1,8 @@
 'use strict';
 
 (function () {
-  window.mapElement = document.querySelector('.map');
+  var mapElement = document.querySelector('.map');
+  window.mapElement = mapElement;
   var MAX_COUNT_PIN = 5;
 
   var clearMap = function () {
@@ -9,7 +10,7 @@
     var pins = mapPinsElement.querySelectorAll('.map__pin');
     for (var i = 0; i < pins.length; i++) {
       var pin = pins[i];
-      if (pin === pinMainElement) {
+      if (pin === window.pinMainElement) {
         continue;
       }
       mapPinsElement.removeChild(pin);
@@ -27,7 +28,7 @@
       var fragment = document.createDocumentFragment();
       for (var i = 0; i < Math.min(offers.length, MAX_COUNT_PIN); i++) {
         var offer = offers[i];
-        var pinElement = pin.createElement(i, offer);
+        var pinElement = window.pin.createElement(i, offer);
         fragment.appendChild(pinElement);
       }
       mapPinsElement.appendChild(fragment);
@@ -37,7 +38,7 @@
         mapElement.classList.add('map--faded');
       }
       clearMap();
-      card.close();
+      window.card.close();
     },
     activate: function () {
       if (mapElement.classList.contains('map--faded')) {

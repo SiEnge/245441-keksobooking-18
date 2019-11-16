@@ -13,7 +13,7 @@
     }
   };
 
-  var closeErrorMessage = function (evt) {
+  var closeErrorMessage = function () {
     var main = document.querySelector('main');
     var errorElement = main.querySelector('.error');
     if (errorElement) {
@@ -68,14 +68,14 @@
 
 
   var onSuccessUnload = function () {
-    page.inactivate();
+    window.page.inactivate();
     showSuccessMessage();
   };
 
   var onSuccessLoad = function (data) {
-    offers = data;
-    pin.display();
-    window.util.activatedForm(filterElement);
+    window.offers = data;
+    window.pin.display();
+    window.util.activatedForm(window.filterElement);
   };
 
 
