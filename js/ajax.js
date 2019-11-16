@@ -1,96 +1,63 @@
 'use strict';
 
 (function () {
-
-  window.load = function (url, onSuccess, onError) {
-    var xhr = new XMLHttpRequest();
-
-    xhr.responseType = 'json';
-    
-    xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
-        onSuccess(xhr.response);
-      } else {
-        onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
-      }
-    });
-
-    xhr.addEventListener('error', function () {
-      onError('Произошла ошибка соединения');
-    });
-
-    xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
-    });
-
-    xhr.timeout = 10000; // 10s
-
-    xhr.open('GET', url);
-    xhr.send();
-  };
-})();
-
-
-(function () {
-  var URL = 'https://js.dump.academy/keksobooking';
-  
-  window.upload = function (data, onSuccess, onError) {
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    
-    xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
-        onSuccess(xhr.response);
-      } else {
-        onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
-      }
-      // onSuccess(xhr.response);
-    });
-    
-    xhr.open('POST', URL);
-    xhr.send(data);
-  };
-})();
-
-(function () {
-  // 4. Если при загрузке данных произошла ошибка запроса, покажите соответствующее сообщение в блоке main, 
-// используя блок #error из шаблона template
-
-  var createElementError = function (text) {
-    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
-    var element = errorTemplate.cloneNode(true);
-    if (text) {
-      element.querySelector('.error__message').innerHTML = text;
+  var getTextError = function (status, statusText) {
+    switch (status) {
+      case 400:
+        return 'Неверный запрос';
+      case 401:
+        return 'Пользователь не авторизован';
+      case 404:
+        return 'Ничего не найдено';
+      case 500:
+        return 'Oшибка сервера';
+      default:
+        return 'Cтатус ответа: ' + status + ' ' + statusText;
     }
-    return element;
   };
 
-  var showError = function (text) {
-    var main = document.querySelector('main');
-    main.appendChild(createElementError(text));
-  };
+  window.ajax = {
+    load: function (url, onSuccess, onError) {
+      var xhr = new XMLHttpRequest();
+      xhr.responseType = 'json';
 
+      xhr.addEventListener('load', function () {
+        if (xhr.status === 200) {
+          onSuccess(xhr.response);
+        } else {
+          var textError = getTextError(xhr.status, xhr.statusText);
+          onError(textError);
+        }
+      });
 
-  var onError = function (message) {
-    showError();
-    console.error(message);
-  };
-  
-  var onSuccess = function (data) {
-    window.offers = data;
-    var similarOffers = checkFilter(data);
-    fillMapPins(similarOffers);
-    
+      xhr.addEventListener('error', function () {
+        onError('Произошла ошибка соединения');
+      });
 
+      xhr.addEventListener('timeout', function () {
+        onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+      });
+
+      xhr.timeout = 10000; // 10s
+
+      xhr.open('GET', url);
+      xhr.send();
+    },
+    upload: function (data, url, onSuccess, onError) {
+      var xhr = new XMLHttpRequest();
+      xhr.responseType = 'json';
+
+      xhr.addEventListener('load', function () {
+        if (xhr.status === 200) {
+          onSuccess(xhr.response);
+        } else {
+          var textError = getTextError(xhr.status, xhr.statusText);
+          onError(textError);
+        }
+      });
+
+      xhr.open('POST', url);
+      xhr.send(data);
+    }
   };
-  
-  window.load('https://js.dump.academy/keksobooking/data', onSuccess, onError);
-  
 })();
-
-
-
-
-
-
-

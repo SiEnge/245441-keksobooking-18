@@ -1,26 +1,125 @@
 'use strict';
 
 (function () {
-	window.checkFilter = function (offers) {
-		//проверка по типу жилья и вывод на страницу не больше пяти пинов
-		var filterForm = document.querySelector('.map__filters');
-		var housingTypeFilter = filterForm.querySelector('#housing-type');
-		
-		return offers;
+  var PRICE_MIDDLE_MIN = 10000;
+  var PRICE_MIDDLE_MAX = 50000;
+  var PRICE_MIN = 0;
+  var PRICE_MAX = Infinity;
+
+  window.filterElement = document.querySelector('.map__filters');
+
+  var checkTypeFilter = function () {
+    var filterSelect = filterElement.querySelector('#housing-type');
+    return filterSelect.value;
+  };
+
+  var checkPriceFilter = function () {
+    var filterSelect = filterElement.querySelector('#housing-price');
+    switch (filterSelect.value) {
+      case 'low':
+        return {type: filterSelect.value, min: PRICE_MIN, max: PRICE_MIDDLE_MIN};
+      case 'middle':
+        return {type: filterSelect.value, min: PRICE_MIDDLE_MIN, max: PRICE_MIDDLE_MAX};
+      case 'high':
+        return {type: filterSelect.value, min: PRICE_MIDDLE_MAX, max: PRICE_MAX};
+      default:
+        return {type: filterSelect.value, min: PRICE_MIN, max: PRICE_MAX};
+    }
+  };
+
+  var checkRoomsFilter = function () {
+    var filterSelect = filterElement.querySelector('#housing-rooms');
+    return filterSelect.value;
+  };
+
+  var checkQuestsFilter = function () {
+    var filterSelect = filterElement.querySelector('#housing-guests');
+    return filterSelect.value;
+  };
+
+  var checkFeatureFilter = function () {
+    var filterSelect = filterElement.querySelector('#housing-features');
+    var features = filterSelect.querySelectorAll('.map__checkbox');
+    var featureFilter = [];
+    for (var i = 0; i < features.length; i++) {
+      var feature = features[i];
+      if (feature.checked === true) {
+        featureFilter.push(feature.value);
+      }
+    }
+    return featureFilter;
+  };
+
+  var getFilter = function () {
+    return {
+      type: checkTypeFilter(),
+      price: checkPriceFilter(),
+      rooms: checkRoomsFilter(),
+      guests: checkQuestsFilter(),
+      feature: checkFeatureFilter()
+    };
+  };
+
+  var isTypeFilter = function (type, filter) {
+    return type === filter || filter === 'any';
+  };
+
+  var isPriceFilter = function (price, filter) {
+    return (price >= +filter.min && price <= +filter.max) || filter.type === 'any';
+  };
+
+  var isRoomsFilter = function (rooms, filter) {
+    return rooms === +filter || filter === 'any';
+  };
+
+  var isQuestsFilter = function (guests, filter) {
+    return guests === +filter || filter === 'any';
+  };
+
+  var isFeaturesFilter = function (features, filter) {
+    if (filter.length === 0) {
+      return true;
+    }
+    for (var i = 0; i < filter.length; i++) {
+      if (!features.includes(filter[i])) {
+        return false;
+      }
+    }
+    return true;
+  };
 
 
-	};
+  window.filter = {
+    activate: function () {
+      data.loadOffers();
+
+      var filterElements = window.filterElement.querySelectorAll('.map__filter');
+      for (var i = 0; i < filterElements.length; i++) {
+        var filterElement = filterElements[i];
+        filterElement.addEventListener('change', pin.display);
+      }
+
+      var filterFeatureElement = window.filterElement.querySelector('.map__features');
+      var filterFeatureElements = filterFeatureElement.querySelectorAll('.map__checkbox');
+
+      for (var i = 0; i < filterFeatureElements.length; i++) {
+        var filterFeatureElement = filterFeatureElements[i];
+        filterFeatureElement.addEventListener('change', pin.display);
+      }
+    },
+    disable: function () {
+      window.util.disabledForm(filterElement);
+      filterElement.reset();
+    },
+    getOffers: function () {
+      var filter = getFilter();
+      return offers.filter(function (offer) {
+        return isTypeFilter(offer.offer.type, filter.type) &&
+        isPriceFilter(offer.offer.price, filter.price) &&
+        isRoomsFilter(offer.offer.rooms, filter.rooms) &&
+        isQuestsFilter(offer.offer.guests, filter.guests) &&
+        isFeaturesFilter(offer.offer.features, filter.feature);
+      });
+    }
+  };
 })();
-
-// В этом задании мы научимся фильтровать данные, полученные с сервера. В проекте предусмотрена отдельная форма с различными фильтрами. 
-// Мы разберём ее чуть позже. Начнём тренировки с малого: запрограммируем фильтр по типу жилья и количеству отображаемых меток. 
-// С фильтром по типу жилья сложностей возникнуть не должно ‐ задача достаточно тривиальная.
-
-// Отдельного пояснения требует реализация фильтра по количеству отображаемых меток. С сервера приходит достаточно много объявлений. 
-// Их может и 10, и 20, и даже больше. Если всегда выводить все объявления, то пользователю среди них будет трудно ориентироваться. 
-// Поэтому мы должны позаботиться, чтобы на карте не отображалось больше 5 меток.
-
-// Задача
-// 1. Выводить на карту не более 5 меток. Установка фильтра по количеству должна происходить сразу после получения данных с сервера;
-// 2. Запрограммировать фильтр «Тип жилья». Помните, независимо от того сколько объявлений соответствует фильтру «Тип жилья» на карте 
-// не должно отображаться больше 5 объявлений.

@@ -1,46 +1,49 @@
 'use strict';
+
 (function () {
-  // заполнение блока map__pins
-  window.fillMapPins = function (similarOffers) {
-    clearMapPins();
-    var mapPins = document.querySelector('.map__pins');
-    var pinMain = document.querySelector('.map__pin--main');
-    var fragment = document.createDocumentFragment();
-    // var offers = window.offers;
-    // for (var i = 0; i < similarOffers.length; i++) {
-    for (var i = 0; i < 5; i++) {
-      var offer = similarOffers[i];
-      var pin = createElementPin(i, offer);
-      fragment.appendChild(pin);
-    }
-    mapPins.appendChild(fragment);
+  window.mapElement = document.querySelector('.map');
+  var MAX_COUNT_PIN = 5;
 
-    var pins = mapPins.querySelectorAll('.map__pin');
-
-    for (var j = 0; j < pins.length; j++) {
-      if (pins[j] === pinMain) {
+  var clearMap = function () {
+    var mapPinsElement = mapElement.querySelector('.map__pins');
+    var pins = mapPinsElement.querySelectorAll('.map__pin');
+    for (var i = 0; i < pins.length; i++) {
+      var pin = pins[i];
+      if (pin === pinMainElement) {
         continue;
       }
-      pins[j].addEventListener('click', openPopupCard);
-
-      pins[j].addEventListener('keydown', function (evt) {
-        if (evt.keyCode === ENTER_KEYCODE) {
-          openPopupCard(evt);
-        }
-      });
+      mapPinsElement.removeChild(pin);
     }
   };
 
-  // очистка блока map_pins
-  window.clearMapPins = function () {
-    var mapPins = document.querySelector('.map__pins');
-    var pinMain = document.querySelector('.map__pin--main');
-    var pins = mapPins.querySelectorAll('.map__pin');
-    for (var i = 0; i < pins.length; i++) {
-      if (pins[i] === pinMain) {
-        continue;
+  window.map = {
+    fill: function (offers) {
+      clearMap();
+      if (offers.length === 0) {
+        return;
       }
-      mapPins.removeChild(pins[i]);
+
+      var mapPinsElement = mapElement.querySelector('.map__pins');
+      var fragment = document.createDocumentFragment();
+      for (var i = 0; i < Math.min(offers.length, MAX_COUNT_PIN); i++) {
+        var offer = offers[i];
+        var pinElement = pin.createElement(i, offer);
+        fragment.appendChild(pinElement);
+      }
+      mapPinsElement.appendChild(fragment);
+    },
+    inactivate: function () {
+      if (!mapElement.classList.contains('map--faded')) {
+        mapElement.classList.add('map--faded');
+      }
+      clearMap();
+      card.close();
+    },
+    activate: function () {
+      if (mapElement.classList.contains('map--faded')) {
+        mapElement.classList.remove('map--faded');
+      }
     }
+
   };
 })();
