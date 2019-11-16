@@ -12,7 +12,6 @@
   var timeOutSelect = formElement.querySelector('#timeout');
   var btnReset = formElement.querySelector('.ad-form__reset');
 
-  // библиотека
   var MinPriceType = {
     'flat': 1000,
     'bungalo': 0,
