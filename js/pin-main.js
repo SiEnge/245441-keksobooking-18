@@ -11,7 +11,7 @@
     MAX_X: MAP_WIDTH - (PIN_MAIN_WIDTH / 2),
     MIN_Y: 130,
     MAX_Y: 630
-  }
+  };
 
   window.pinMainElement = document.querySelector('.map__pin--main');
   var coordDefaultPinMain = new window.Coordinate(pinMainElement.offsetLeft, pinMainElement.offsetTop);
@@ -31,22 +31,22 @@
     var coordCenter = {};
     coordCenter.x = Math.round(coordPinMain.x + (PIN_MAIN_WIDTH / 2));
     if (mapElement.classList.contains('map--faded')) {
-      coordCenter.y =  Math.round(coordPinMain.y + (PIN_MAIN_HEIGHT / 2));
+      coordCenter.y = Math.round(coordPinMain.y + (PIN_MAIN_HEIGHT / 2));
     } else {
-      coordCenter.y =  Math.round(coordPinMain.y + PIN_MAIN_HEIGHT);
+      coordCenter.y = Math.round(coordPinMain.y + PIN_MAIN_HEIGHT);
     }
 
     return coordCenter;
   };
 
-  var displayCoordPinMain = function(coord) {
+  var displayCoordPinMain = function (coord) {
     var coordCenter = getCoordCenterPinMain(coord);
     form.displayCoordAddress(coordCenter);
   };
 
   window.pinMain = {
     init: function () {
-      setStyleCoorsPinMain(coordDefaultPinMain)
+      setStyleCoorsPinMain(coordDefaultPinMain);
       displayCoordPinMain(coordDefaultPinMain);
 
       pinMainElement.addEventListener('mousedown', page.activate);
@@ -61,7 +61,7 @@
       pinMainElement.addEventListener('mousedown', move);
     },
     setCoord: function (shift) {
-      var newCoord = new window.Coordinate(pinMainElement.offsetLeft - shift.x, pinMainElement.offsetTop - shift.y)
+      var newCoord = new window.Coordinate(pinMainElement.offsetLeft - shift.x, pinMainElement.offsetTop - shift.y);
 
       var pinMainCoords = new window.Coordinate('', '', COORD_PIN_MAIN.MIN_X, COORD_PIN_MAIN.MAX_X, COORD_PIN_MAIN.MIN_Y, COORD_PIN_MAIN.MAX_Y);
       pinMainCoords.setX(newCoord.x);

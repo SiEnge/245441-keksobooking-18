@@ -13,7 +13,7 @@
     }
   };
 
-  var closeErrorMessage = function (evt) {
+  var closeErrorMessage = function () {
     var main = document.querySelector('main');
     var errorElement = main.querySelector('.error');
     if (errorElement) {

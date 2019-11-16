@@ -54,9 +54,11 @@
   };
 
   var getTextPrice = function (price) {
+    var text;
     if (price !== 0) {
-      return price + '₽/ночь';
+      text = price + '₽/ночь';
     }
+    return text;
   };
 
   var createElementCard = function (offerId) {

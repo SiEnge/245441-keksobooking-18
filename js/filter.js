@@ -102,9 +102,8 @@
       var filterFeatureElement = window.filterElement.querySelector('.map__features');
       var filterFeatureElements = filterFeatureElement.querySelectorAll('.map__checkbox');
 
-      for (var i = 0; i < filterFeatureElements.length; i++) {
-        var filterFeatureElement = filterFeatureElements[i];
-        filterFeatureElement.addEventListener('change', pin.display);
+      for (var j = 0; j < filterFeatureElements.length; j++) {
+        filterFeatureElements[j].addEventListener('change', pin.display);
       }
     },
     disable: function () {
