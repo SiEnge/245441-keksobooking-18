@@ -1,7 +1,8 @@
 'use strict';
 
 (function () {
-  window.formElement = document.querySelector('.ad-form');
+  var formElement = document.querySelector('.ad-form');
+  window.formElement = formElement;
 
   var housingRoomSelect = formElement.querySelector('#room_number');
   var capacitySelect = formElement.querySelector('#capacity');
@@ -20,11 +21,11 @@
   };
 
   housingRoomSelect.addEventListener('change', function () {
-    validity.elemForm(capacitySelect);
+    window.validity.elemForm(capacitySelect);
   });
 
   capacitySelect.addEventListener('change', function () {
-    validity.elemForm(capacitySelect);
+    window.validity.elemForm(capacitySelect);
   });
 
   var setMinPriceInput = function (type) {
@@ -35,7 +36,7 @@
 
   typeSelect.addEventListener('change', function () {
     setMinPriceInput(typeSelect.value);
-    validity.elemForm(priceInput);
+    window.validity.elemForm(priceInput);
   });
 
   timeInSelect.addEventListener('change', function () {
@@ -48,7 +49,7 @@
 
   btnReset.addEventListener('click', function (evt) {
     evt.preventDefault();
-    page.inactivate();
+    window.page.inactivate();
   });
 
   var clearErrorAdForm = function () {
@@ -70,8 +71,8 @@
 
   formElement.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    if (validity.checkForm(formElement)) {
-      data.sendOffer(new FormData(formElement));
+    if (window.validity.checkForm(formElement)) {
+      window.data.sendOffer(new FormData(formElement));
     }
   });
 
@@ -96,7 +97,7 @@
       var inputElements = formElement.querySelectorAll('input');
       for (var i = 0; i < inputElements.length; i++) {
         var inputElement = inputElements[i];
-        inputElement.addEventListener('change', validity.isnput);
+        inputElement.addEventListener('change', window.validity.isnput);
       }
     },
     displayCoordAddress: function (coord) {
