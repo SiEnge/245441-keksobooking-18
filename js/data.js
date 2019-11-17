@@ -1,75 +1,53 @@
 'use strict';
 
 (function () {
-  window.offers = [];
-  window.similarOffers = [];
-
   var URL_GET_OFFERS = 'https://js.dump.academy/keksobooking/data';
   var URL_POST_OFFER = 'https://js.dump.academy/keksobooking';
 
-  var onErrorMessageEscPress = function (evt) {
+  window.offers = [];
+  window.similarOffers = [];
+
+  var onMessageClick = function () {
+    closeMessage();
+  };
+
+  var onMessageEscPress = function (evt) {
     if (evt.keyCode === window.util.ESC_KEYCODE) {
-      closeErrorMessage();
+      closeMessage();
     }
   };
 
-  var closeErrorMessage = function () {
+  var showMessage = function (typeMessage, textMessage) {
     var main = document.querySelector('main');
-    var errorElement = main.querySelector('.error');
-    if (errorElement) {
-      main.removeChild(errorElement);
+    var template = document.querySelector('#' + typeMessage).content.querySelector('.' + typeMessage);
+    var message = template.cloneNode(true);
+    if (textMessage && textMessage !== '') {
+      var text = textMessage;
+      message.querySelector('.error__message').textContent = text;
     }
-    document.removeEventListener('keydown', onErrorMessageEscPress);
+    message.classList.add('message');
+    message.addEventListener('click', onMessageClick);
+    document.addEventListener('keydown', onMessageEscPress);
+    main.appendChild(message);
   };
 
-  var showErrorMessage = function (message) {
+  var closeMessage = function () {
     var main = document.querySelector('main');
-    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
-    var errorElement = errorTemplate.cloneNode(true);
-    if (message !== '') {
-      var text = errorElement.querySelector('.error__message').textContent + '<br>' + message;
-      errorElement.querySelector('.error__message').innerHTML = text;
+    var message = main.querySelector('.message');
+
+    if (message) {
+      main.removeChild(message);
     }
-
-    errorElement.addEventListener('click', closeErrorMessage);
-    document.addEventListener('keydown', onErrorMessageEscPress);
-    main.appendChild(errorElement);
+    document.removeEventListener('keydown', onMessageEscPress);
   };
-
 
   var onError = function (error) {
-    showErrorMessage(error);
+    showMessage('error', error);
   };
-
-  var onSuccessMessageEscPress = function (evt) {
-    if (evt.keyCode === window.util.ESC_KEYCODE) {
-      closeSuccessMessage();
-    }
-  };
-
-  var closeSuccessMessage = function () {
-    var main = document.querySelector('main');
-    var successElement = main.querySelector('.success');
-    if (successElement) {
-      main.removeChild(successElement);
-    }
-    document.removeEventListener('keydown', onSuccessMessageEscPress);
-  };
-
-  var showSuccessMessage = function () {
-    var main = document.querySelector('main');
-    var successTemplate = document.querySelector('#success').content.querySelector('.success');
-    var successElement = successTemplate.cloneNode(true);
-
-    successElement.addEventListener('click', closeSuccessMessage);
-    document.addEventListener('keydown', onSuccessMessageEscPress);
-    main.appendChild(successElement);
-  };
-
 
   var onSuccessUnload = function () {
     window.page.inactivate();
-    showSuccessMessage();
+    showMessage('success');
   };
 
   var onSuccessLoad = function (data) {
@@ -78,13 +56,15 @@
     window.util.activatedForm(window.filterElement);
   };
 
-
   window.data = {
+
     loadOffers: function () {
       window.ajax.load(URL_GET_OFFERS, onSuccessLoad, onError);
     },
+
     sendOffer: function (data) {
       window.ajax.upload(data, URL_POST_OFFER, onSuccessUnload, onError);
     }
+
   };
 })();

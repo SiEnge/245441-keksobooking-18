@@ -1,10 +1,18 @@
 'use strict';
 
 (function () {
-  var PRICE_MIDDLE_MIN = 10000;
-  var PRICE_MIDDLE_MAX = 50000;
-  var PRICE_MIN = 0;
-  var PRICE_MAX = Infinity;
+  var Price = {
+    MIN: 0,
+    MIDDLE_MIN: 10000,
+    MIDDLE_MAX: 50000,
+    MAX: Infinity
+  };
+
+  var PriceFilter = {
+    LOW: 'low',
+    MIDDLE: 'middle',
+    HIGH: 'high'
+  };
 
   var filterElement = document.querySelector('.map__filters');
   window.filterElement = filterElement;
@@ -17,37 +25,37 @@
   var checkPriceFilter = function () {
     var filterSelect = filterElement.querySelector('#housing-price');
     switch (filterSelect.value) {
-      case 'low':
-        return {type: filterSelect.value, min: PRICE_MIN, max: PRICE_MIDDLE_MIN};
-      case 'middle':
-        return {type: filterSelect.value, min: PRICE_MIDDLE_MIN, max: PRICE_MIDDLE_MAX};
-      case 'high':
-        return {type: filterSelect.value, min: PRICE_MIDDLE_MAX, max: PRICE_MAX};
+      case PriceFilter.LOW:
+        return {type: filterSelect.value, min: Price.MIN, max: Price.MIDDLE_MIN};
+      case PriceFilter.MIDDLE:
+        return {type: filterSelect.value, min: Price.MIDDLE_MIN, max: Price.MIDDLE_MAX};
+      case PriceFilter.HIGH:
+        return {type: filterSelect.value, min: Price.MIDDLE_MAX, max: Price.MAX};
       default:
-        return {type: filterSelect.value, min: PRICE_MIN, max: PRICE_MAX};
+        return {type: filterSelect.value, min: Price.MIN, max: Price.MAX};
     }
   };
 
   var checkRoomsFilter = function () {
-    var filterSelect = filterElement.querySelector('#housing-rooms');
-    return filterSelect.value;
+    return filterElement.querySelector('#housing-rooms').value;
   };
 
   var checkQuestsFilter = function () {
-    var filterSelect = filterElement.querySelector('#housing-guests');
-    return filterSelect.value;
+    return filterElement.querySelector('#housing-guests').value;
   };
 
   var checkFeatureFilter = function () {
     var filterSelect = filterElement.querySelector('#housing-features');
     var features = filterSelect.querySelectorAll('.map__checkbox');
     var featureFilter = [];
+
     for (var i = 0; i < features.length; i++) {
       var feature = features[i];
       if (feature.checked === true) {
         featureFilter.push(feature.value);
       }
     }
+
     return featureFilter;
   };
 
@@ -89,27 +97,35 @@
     return true;
   };
 
+  var onChangeFilter = function () {
+    window.pin.display();
+  };
+
 
   window.filter = {
+
     activate: function () {
       window.data.loadOffers();
 
       var filterElements = window.filterElement.querySelectorAll('.map__filter');
-      for (var i = 0; i < filterElements.length; i++) {
-        filterElements[i].addEventListener('change', window.pin.display);
-      }
+
+      filterElements.forEach(function (element) {
+        element.addEventListener('change', onChangeFilter);
+      });
 
       var filterFeatureElement = window.filterElement.querySelector('.map__features');
       var filterFeatureElements = filterFeatureElement.querySelectorAll('.map__checkbox');
 
-      for (var j = 0; j < filterFeatureElements.length; j++) {
-        filterFeatureElements[j].addEventListener('change', window.pin.display);
-      }
+      filterFeatureElements.forEach(function (element) {
+        element.addEventListener('change', onChangeFilter);
+      });
     },
+
     disable: function () {
       window.util.disabledForm(filterElement);
       filterElement.reset();
     },
+
     getOffers: function () {
       var filter = getFilter();
       return window.offers.filter(function (offer) {
@@ -120,5 +136,6 @@
         isFeaturesFilter(offer.offer.features, filter.feature);
       });
     }
+
   };
 })();

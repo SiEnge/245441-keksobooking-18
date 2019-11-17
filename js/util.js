@@ -9,33 +9,34 @@
     ENTER_KEYCODE: ENTER_KEYCODE,
 
     disabledForm: function (form) {
-      var input = form.querySelectorAll('input');
-      if (input.length > 0) {
-        for (var i = 0; i < input.length; i++) {
-          input[i].disabled = true;
-        }
+      var inputElements = form.querySelectorAll('input');
+      if (inputElements.length > 0) {
+        inputElements.forEach(function (element) {
+          element.disabled = true;
+        });
       }
 
-      var selects = form.querySelectorAll('select');
-      if (selects.length > 0) {
-        for (var j = 0; j < selects.length; j++) {
-          selects[j].disabled = true;
-        }
+      var selectElements = form.querySelectorAll('select');
+      if (selectElements.length > 0) {
+        selectElements.forEach(function (element) {
+          element.disabled = true;
+        });
       }
     },
+
     activatedForm: function (form) {
-      var input = form.querySelectorAll('input');
-      if (input.length > 0) {
-        for (var i = 0; i < input.length; i++) {
-          input[i].disabled = false;
-        }
+      var inputElements = form.querySelectorAll('input');
+      if (inputElements.length > 0) {
+        inputElements.forEach(function (element) {
+          element.disabled = false;
+        });
       }
 
-      var selects = form.querySelectorAll('select');
-      if (selects.length > 0) {
-        for (var j = 0; j < selects.length; j++) {
-          selects[j].disabled = false;
-        }
+      var selectElements = form.querySelectorAll('select');
+      if (selectElements.length > 0) {
+        selectElements.forEach(function (element) {
+          element.disabled = false;
+        });
       }
     }
   };

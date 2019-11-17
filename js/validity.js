@@ -2,25 +2,24 @@
 
 (function () {
   var RoomsCount = {
-    one: '1',
-    two: '2',
-    three: '3',
-    oneHundred: '100'
+    ONE: '1',
+    TWO: '2',
+    THREE: '3',
+    ONE_HUNDRED: '100'
   };
 
   var CapacityCount = {
-    one: '1',
-    two: '2',
-    three: '3',
-    no: '0'
+    ONE: '1',
+    TWO: '2',
+    THREE: '3',
+    NULL: '0'
   };
 
-  // показ сообщения об ошибке на форме
   var displayErrorMessageForm = function (elem, message) {
     var wrapElement = elem.parentElement;
     var errorElement = wrapElement.querySelector('.error__elemForm');
     if (errorElement) {
-      errorElement.innerHTML = message;
+      errorElement.textContent = message;
     } else {
       elem.insertAdjacentHTML('afterend', '<p class="error__elemForm" style="color: red; margin-top: 6px;">' + message.join('<br>') + '</p>');
     }
@@ -37,15 +36,14 @@
     elem.style = '';
   };
 
-  // проверка соответствия комнат и количества гостей
   var checkCapacityRooms = function (rooms, capacity) {
-    if (rooms === RoomsCount.one && capacity === CapacityCount.one) {
+    if (rooms === RoomsCount.ONE && capacity === CapacityCount.ONE) {
       return true;
-    } else if (rooms === RoomsCount.two && (capacity === CapacityCount.one || capacity === CapacityCount.two)) {
+    } else if (rooms === RoomsCount.TWO && (capacity === CapacityCount.ONE || capacity === CapacityCount.TWO)) {
       return true;
-    } else if (rooms === RoomsCount.three && (capacity === CapacityCount.one || capacity === CapacityCount.two || capacity === CapacityCount.three)) {
+    } else if (rooms === RoomsCount.THREE && (capacity === CapacityCount.ONE || capacity === CapacityCount.TWO || capacity === CapacityCount.THREE)) {
       return true;
-    } else if (rooms === RoomsCount.oneHundred && capacity === CapacityCount.no) {
+    } else if (rooms === RoomsCount.ONE_HUNDRED && capacity === CapacityCount.NULL) {
       return true;
     }
     return false;
@@ -104,33 +102,34 @@
 
       return checkValidate;
     },
+
     input: function (evt) {
       var input = evt.target;
       window.validity.elemForm(input);
     },
+
     checkForm: function (form) {
       var flagValidForm = true;
       var checkForm;
-      var selects = form.querySelectorAll('select');
-      var inputs = form.querySelectorAll('input');
+      var selectElements = form.querySelectorAll('select');
+      var inputElements = form.querySelectorAll('input');
 
-      for (var i = 0; i < inputs.length; i++) {
-        var input = inputs[i];
-        checkForm = window.validity.elemForm(input);
+      inputElements.forEach(function (element) {
+        checkForm = window.validity.elemForm(element);
         if (!checkForm.flag) {
           flagValidForm = false;
         }
-      }
+      });
 
-      for (var j = 0; j < selects.length; j++) {
-        var select = selects[j];
-        checkForm = window.validity.elemForm(select);
+      selectElements.forEach(function (element) {
+        checkForm = window.validity.elemForm(element);
         if (!checkForm.flag) {
           flagValidForm = false;
         }
-      }
+      });
 
       return flagValidForm;
     }
+
   };
 })();

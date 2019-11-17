@@ -1,7 +1,8 @@
 'use strict';
 
 (function () {
-  var TextNameType = {
+  // библиотека
+  var textToNameType = {
     'flat': 'Квартира',
     'bungalo': 'Бунгало',
     'house': 'Дом',
@@ -11,23 +12,29 @@
   var appendFeatures = function (features, card) {
     var featuresElement = card.querySelector('.popup__features');
     var featureElements = featuresElement.querySelectorAll('.popup__feature');
-    for (var i = 0; i < featureElements.length; i++) {
-      featureElements[i].style.display = 'none';
-    }
-    for (var j = 0; j < features.length; j++) {
-      featuresElement.querySelector('.popup__feature--' + features[j]).style.display = '';
-    }
+
+    featureElements.forEach(function (element) {
+      element.style.display = 'none';
+    });
+
+    features.forEach(function (feature) {
+      featuresElement.querySelector('.popup__feature--' + feature).style.display = '';
+    });
   };
 
   var appendPhotos = function (photos, card) {
     var photosElement = card.querySelector('.popup__photos');
     var photoElement = photosElement.querySelector('.popup__photo');
+    var fragment = document.createDocumentFragment();
+
     for (var i = 0; i < photos.length; i++) {
       var photo = photos[i];
       var element = photoElement.cloneNode(true);
       element.src = photo;
-      photosElement.appendChild(element);
+      fragment.appendChild(element);
     }
+
+    photosElement.appendChild(fragment);
     photosElement.removeChild(photoElement);
   };
 
@@ -43,14 +50,14 @@
   };
 
   var getTextTime = function (checkin, checkout) {
-    var text = [];
+    var texts = [];
     if (checkin !== '0:00') {
-      text.push('Заезд после ' + checkin);
+      texts.push('Заезд после ' + checkin);
     }
     if (checkout !== '0:00') {
-      text.push('выезд до ' + checkout);
+      texts.push('выезд до ' + checkout);
     }
-    return text.join(', ');
+    return texts.join(', ');
   };
 
   var getTextPrice = function (price) {
@@ -68,7 +75,7 @@
     element.querySelector('.popup__title').textContent = offer.offer.title || '';
     element.querySelector('.popup__text--address').textContent = offer.offer.address || '';
     element.querySelector('.popup__text--price').textContent = getTextPrice(offer.offer.price);
-    element.querySelector('.popup__type').textContent = TextNameType[offer.offer.type] || '';
+    element.querySelector('.popup__type').textContent = textToNameType[offer.offer.type] || '';
     element.querySelector('.popup__text--capacity').textContent = getTextCapacity(offer.offer.rooms, offer.offer.guests);
     element.querySelector('.popup__text--time').textContent = getTextTime(offer.offer.checkin, offer.offer.checkout);
     appendFeatures(offer.offer.features, element);
@@ -84,18 +91,25 @@
     }
   };
 
+  var onCloseButtonClick = function () {
+    window.card.close();
+  };
+
   window.card = {
+
     open: function (evt) {
       window.card.close();
+
       var pinElement = evt.currentTarget;
       window.pin.activate(pinElement);
 
       var cardElement = createElementCard(pinElement.dataset.offerId);
       var closeButtonElement = cardElement.querySelector('.popup__close');
-      closeButtonElement.addEventListener('click', window.card.close);
+      closeButtonElement.addEventListener('click', onCloseButtonClick);
       document.addEventListener('keydown', onCardEscPress);
       window.mapElement.insertBefore(cardElement, window.mapElement.querySelector('.map__filters-container'));
     },
+
     close: function () {
       var cardElement = window.mapElement.querySelector('.map__card');
       if (cardElement) {
@@ -104,5 +118,7 @@
       document.removeEventListener('keydown', onCardEscPress);
       window.pin.deactivate();
     }
+
   };
 })();
+
