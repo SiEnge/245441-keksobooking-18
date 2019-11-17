@@ -1,6 +1,13 @@
 'use strict';
 
 (function () {
+  var typeToMinPrice = {
+    'flat': 1000,
+    'bungalo': 0,
+    'house': 5000,
+    'palace': 10000
+  };
+
   var formElement = document.querySelector('.ad-form');
   window.formElement = formElement;
 
@@ -12,13 +19,6 @@
   var timeOutSelect = formElement.querySelector('#timeout');
   var btnReset = formElement.querySelector('.ad-form__reset');
 
-  var MinPriceType = {
-    'flat': 1000,
-    'bungalo': 0,
-    'house': 5000,
-    'palace': 10000
-  };
-
   housingRoomSelect.addEventListener('change', function () {
     window.validity.elemForm(capacitySelect);
   });
@@ -28,10 +28,9 @@
   });
 
   var setMinPriceInput = function (type) {
-    priceInput.min = MinPriceType[type];
-    priceInput.placeholder = MinPriceType[type];
+    priceInput.min = typeToMinPrice[type];
+    priceInput.placeholder = typeToMinPrice[type];
   };
-
 
   typeSelect.addEventListener('change', function () {
     setMinPriceInput(typeSelect.value);
@@ -53,19 +52,21 @@
 
   var clearErrorAdForm = function () {
     var errors = formElement.querySelectorAll('.error__elemForm');
-    if (errors.length > 0) {
-      for (var i = 0; i < errors.length; i++) {
-        var error = errors[i];
-        var wrap = error.parentElement;
-        wrap.removeChild(error);
-        if (wrap.querySelector('input')) {
-          wrap.querySelector('input').style = '';
-        }
-        if (wrap.querySelector('select')) {
-          wrap.querySelector('select').style = '';
-        }
+
+    errors.forEach(function (error) {
+      var wrap = error.parentElement;
+      wrap.removeChild(error);
+      if (wrap.querySelector('input')) {
+        wrap.querySelector('input').style = '';
       }
-    }
+      if (wrap.querySelector('select')) {
+        wrap.querySelector('select').style = '';
+      }
+    });
+  };
+
+  var onChangeInputElement = function (evt) {
+    window.validity.input(evt);
   };
 
   formElement.addEventListener('submit', function (evt) {
@@ -76,6 +77,7 @@
   });
 
   window.form = {
+
     disable: function () {
       if (!formElement.classList.contains('ad-form--disabled')) {
         formElement.classList.add('ad-form--disabled');
@@ -86,6 +88,7 @@
       window.util.disabledForm(formElement);
       clearErrorAdForm();
     },
+
     activate: function () {
       if (formElement.classList.contains('ad-form--disabled')) {
         formElement.classList.remove('ad-form--disabled');
@@ -94,13 +97,15 @@
       window.util.activatedForm(formElement);
 
       var inputElements = formElement.querySelectorAll('input');
-      for (var i = 0; i < inputElements.length; i++) {
-        var inputElement = inputElements[i];
-        inputElement.addEventListener('change', window.validity.isnput);
-      }
+
+      inputElements.forEach(function (element) {
+        element.addEventListener('change', onChangeInputElement);
+      });
     },
+
     displayCoordAddress: function (coord) {
       formElement.querySelector('#address').value = coord.x + ', ' + coord.y;
     }
+
   };
 })();

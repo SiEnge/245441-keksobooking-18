@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-
   window.move = function (evt) {
     evt.preventDefault();
 
