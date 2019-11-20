@@ -10,13 +10,11 @@
     var mapPinsElement = mapElement.querySelector('.map__pins');
     var pins = mapPinsElement.querySelectorAll('.map__pin');
 
-    for (var i = 0; i < pins.length; i++) {
-      var pin = pins[i];
-      if (pin === window.pinMainElement) {
-        continue;
+    pins.forEach(function (pin) {
+      if (pin !== window.pinMainElement) {
+        mapPinsElement.removeChild(pin);
       }
-      mapPinsElement.removeChild(pin);
-    }
+    });
   };
 
   window.map = {

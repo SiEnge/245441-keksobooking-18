@@ -47,16 +47,15 @@
   var checkFeatureFilter = function () {
     var filterSelect = filterElement.querySelector('#housing-features');
     var features = filterSelect.querySelectorAll('.map__checkbox');
-    var featureFilter = [];
+    var featureFilters = [];
 
-    for (var i = 0; i < features.length; i++) {
-      var feature = features[i];
+    features.forEach(function (feature) {
       if (feature.checked === true) {
-        featureFilter.push(feature.value);
+        featureFilters.push(feature.value);
       }
-    }
+    });
 
-    return featureFilter;
+    return featureFilters;
   };
 
   var getFilter = function () {
@@ -65,7 +64,7 @@
       price: checkPriceFilter(),
       rooms: checkRoomsFilter(),
       guests: checkQuestsFilter(),
-      feature: checkFeatureFilter()
+      features: checkFeatureFilter()
     };
   };
 
@@ -85,16 +84,20 @@
     return guests === +filter || filter === 'any';
   };
 
-  var isFeaturesFilter = function (features, filter) {
-    if (filter.length === 0) {
-      return true;
+  var isFeaturesFilter = function (features, filters) {
+    var isFilterInFeature = true;
+
+    if (filters.length === 0) {
+      return isFilterInFeature;
     }
-    for (var i = 0; i < filter.length; i++) {
-      if (!features.includes(filter[i])) {
-        return false;
+
+    filters.forEach(function (filter) {
+      if (!features.includes(filter)) {
+        isFilterInFeature = false;
       }
-    }
-    return true;
+    });
+
+    return isFilterInFeature;
   };
 
   var onChangeFilter = function () {
@@ -133,7 +136,7 @@
         isPriceFilter(offer.offer.price, filter.price) &&
         isRoomsFilter(offer.offer.rooms, filter.rooms) &&
         isQuestsFilter(offer.offer.guests, filter.guests) &&
-        isFeaturesFilter(offer.offer.features, filter.feature);
+        isFeaturesFilter(offer.offer.features, filter.features);
       });
     }
 

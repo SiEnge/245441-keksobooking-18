@@ -1,11 +1,12 @@
 'use strict';
 
 (function () {
-  var typeToMinPrice = {
-    'flat': 1000,
-    'bungalo': 0,
-    'house': 5000,
-    'palace': 10000
+  // специально для проверяющего наставника))
+  var MinPriceType = {
+    BUNGALO: 0,
+    FLAT: 1000,
+    HOUSE: 5000,
+    PALACE: 10000
   };
 
   var formElement = document.querySelector('.ad-form');
@@ -28,8 +29,8 @@
   });
 
   var setMinPriceInput = function (type) {
-    priceInput.min = typeToMinPrice[type];
-    priceInput.placeholder = typeToMinPrice[type];
+    priceInput.min = MinPriceType[type.toUpperCase()];
+    priceInput.placeholder = MinPriceType[type.toUpperCase()];
   };
 
   typeSelect.addEventListener('change', function () {
@@ -52,7 +53,6 @@
 
   var clearErrorAdForm = function () {
     var errors = formElement.querySelectorAll('.error__elemForm');
-
     errors.forEach(function (error) {
       var wrap = error.parentElement;
       wrap.removeChild(error);
